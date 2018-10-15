@@ -1,0 +1,38 @@
+---
+title: "assignment-2"
+author: "Célia Richy"
+date: "13/10/2018"
+output: html_document
+---
+
+##### Exercise 1
+
+```{r}
+source("assignment-2.R")
+if(!exists(".Random.seed")) set.seed(NULL)
+previous_seed <- .Random.seed
+set.seed(1)
+ptest_1 <- permutation_twogroups(iris_subset_1, "Sepal.Width", "Species", "versicolor",
+                                 "virginica", difference_in_means, n_samples=9999)
+ptest_2 <- permutation_twogroups(iris_subset_2, "Sepal.Width", "Species", "versicolor",
+                                 "virginica", difference_in_means, n_samples=9999)
+set.seed(previous_seed)
+print(ptest_1)
+print(ptest_2)
+```
+```{r}
+ptest_1 <- tibble::as_tibble(ptest_1["permuted"])
+# création de l'histogramme partant des données ptest_d.
+ptest_hist1 <- ggplot2::ggplot(data=ptest_1, ggplot2::aes(ptest_1$permuted)) + ggplot2::geom_histogram()
+# ajout de la ligne à l'intercept de x. Par contre, je n'ai aucune idée de la signification de #cet intercept.
+ptest_hist1 <- ptest_hist1 + ggplot2::geom_vline(xintercept = -0.3133333)
+print(ptest_hist1)
+
+ptest_2 <- tibble::as_tibble(ptest_2["permuted"])
+ptest_hist2 <- ggplot2::ggplot(data=ptest_2, ggplot2::aes(ptest_2$permuted)) + ggplot2::geom_histogram()
+# ajout de la ligne à l'intercept de x. Par contre, je n'ai aucune idée de la signification de #cet intercept.
+ptest_hist2 <- ptest_hist2 + ggplot2::geom_vline(xintercept = -0.2142857)
+print(ptest_hist2)
+```
+
+
