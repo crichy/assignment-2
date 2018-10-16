@@ -20,7 +20,7 @@ difference_in_means <- function(d, var, grouping_var, group1, group2) {
 }
 
 randomize <- function(d, var) {
-  d[[var]] <- sample(d[[var]], replace = F)
+  d[[var]] <- sample(d[[var]], replace= F)
   return(d) 
 }
 

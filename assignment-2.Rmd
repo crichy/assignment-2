@@ -6,6 +6,22 @@ output: html_document
 ---
 
 ##### Exercise 1
+```{r}
+source("assignment-2.R")
+difference_in_means(iris, "Sepal.Width", "Species", "versicolor", "virginica")
+difference_in_means(iris, "Sepal.Width", "Species", "virginica", "virginica")
+```
+```{r}
+iris$Sepal.Width[1:10]
+if(!exists(".Random.seed")) set.seed(NULL)
+previous_seed <- .Random.seed
+set.seed(1)
+randomize(iris, "Sepal.Width")$Sepal.Width[1:10]
+randomize(iris, "Species")$Species[1:10]
+randomize(iris, "Species")$Sepal.Width[1:10]
+set.seed(previous_seed)
+```
+
 
 ```{r}
 source("assignment-2.R")
@@ -25,14 +41,16 @@ ptest_1 <- tibble::as_tibble(ptest_1["permuted"])
 # création de l'histogramme partant des données ptest_d.
 ptest_hist1 <- ggplot2::ggplot(data=ptest_1, ggplot2::aes(ptest_1$permuted)) + ggplot2::geom_histogram()
 # ajout de la ligne à l'intercept de x. Par contre, je n'ai aucune idée de la signification de #cet intercept.
+ptest_hist1 <- ptest_hist1 + ggplot2::xlim(-0.6,0.6)
 ptest_hist1 <- ptest_hist1 + ggplot2::geom_vline(xintercept = -0.3133333)
 print(ptest_hist1)
 
 ptest_2 <- tibble::as_tibble(ptest_2["permuted"])
 ptest_hist2 <- ggplot2::ggplot(data=ptest_2, ggplot2::aes(ptest_2$permuted)) + ggplot2::geom_histogram()
 # ajout de la ligne à l'intercept de x. Par contre, je n'ai aucune idée de la signification de #cet intercept.
+ptest_hist2 <- ptest_hist2 + ggplot2::xlim(-0.6,0.6)
 ptest_hist2 <- ptest_hist2 + ggplot2::geom_vline(xintercept = -0.2142857)
 print(ptest_hist2)
 ```
-
+Il y a des différences entre les deux histogrammes parce que les deux subsets ne contiennent pas le même nombre de données, et donc pas les mêmes données non plus. De ce fait, la statistique observée ne peut pas être la même non plus puisque les données comparées ne sont pas les mêmes.
 
