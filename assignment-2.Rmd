@@ -4,23 +4,12 @@ author: "Célia Richy"
 date: "13/10/2018"
 output: html_document
 ---
+```{r}
+`%>%` <- magrittr::`%>%`
+```
+
 
 ##### Exercise 1
-```{r}
-source("assignment-2.R")
-difference_in_means(iris, "Sepal.Width", "Species", "versicolor", "virginica")
-difference_in_means(iris, "Sepal.Width", "Species", "virginica", "virginica")
-```
-```{r}
-iris$Sepal.Width[1:10]
-if(!exists(".Random.seed")) set.seed(NULL)
-previous_seed <- .Random.seed
-set.seed(1)
-randomize(iris, "Sepal.Width")$Sepal.Width[1:10]
-randomize(iris, "Species")$Species[1:10]
-randomize(iris, "Species")$Sepal.Width[1:10]
-set.seed(previous_seed)
-```
 
 
 ```{r}
@@ -53,4 +42,73 @@ ptest_hist2 <- ptest_hist2 + ggplot2::geom_vline(xintercept = -0.2142857)
 print(ptest_hist2)
 ```
 Il y a des différences entre les deux histogrammes parce que les deux subsets ne contiennent pas le même nombre de données, et donc pas les mêmes données non plus. De ce fait, la statistique observée ne peut pas être la même non plus puisque les données comparées ne sont pas les mêmes.
+
+
+##### Exercise 2
+
+###### Task A
+
+```{r}
+#création d'un subset contenant les dictionnaires "W1802", "J1917" et "C1687" grâce à l'opérateur "ou"
+stress_shift_3dict <- dplyr::filter(stressshift::stress_shift_unamb, 
+                                    Dict == "W1802" |
+                                    Dict == "J1917" |  
+                                    Dict == "C1687")
+                                
+#on imprime le nombre de rang de ce subset pour vérifier qu'on en a bien 451
+print(nrow(stress_shift_3dict))
+```
+
+
+###### Task B
+
+```{r}
+                                  # on commence par appeler le dataset en question
+stress_shift_3dict_using_pipe <- stressshift::stress_shift_unamb %>%
+                                  subset(Dict == "W1802" |       #puis on crée le subset
+                                    Dict == "J1917" |  
+                                    Dict == "C1687")
+identical(stress_shift_3dict, stress_shift_3dict_using_pipe)                                 
+```
+
+###### Task C
+
+```{r}
+#création du subset qui ne prend que les noms dans la colonne "category"
+stress_shift_3dict_nouns <- dplyr::filter(stress_shift_3dict, Category == "Noun")
+#création du subset qui ne prend que les verbs dans la colonne "category"
+stress_shift_3dict_verbs <- dplyr::filter(stress_shift_3dict, Category == "Verb")
+#création de la nouvelle data frame combinant les verbes et les noms
+stress_shift_3dict_using_bind <- dplyr::bind_rows(stress_shift_3dict_nouns, stress_shift_3dict_verbs)
+#puis on inverse l'ordre
+stress_shift_3dict_using_bind_reversed <- dplyr::bind_rows(stress_shift_3dict_verbs,
+                                                           stress_shift_3dict_nouns)
+print(stress_shift_3dict_using_bind_reversed)
+#on vérifie lequel de ces deux nouveaux dataframes est identique à stress_shift_3dict
+identical(stress_shift_3dict, stress_shift_3dict_using_bind)
+#on vérifie lequel de ces deux nouveaux dataframes est identique à stress_shift_3dict
+identical(stress_shift_3dict, stress_shift_3dict_using_bind_reversed)
+```
+"Stress_shift_using_bind" est identique à "stress_shift_3dict" mais pas le dataframe reversed tout simplement parce que l'ordre de reversed ne correspond plus exactement à l'ordre donné dans "stress_shift_3dict". Dans ce dataframe, il apparait que les noms sont donnés avant les verbes.
+Je ne pense pas que l'ordre des éléments "noms" ou "verbe" importe puisque dans tous les cas les données restent les mêmes.
+
+###### Task D
+```{r}
+#on crée un subset du grand dataframe contenant seulement les noms
+stress_shift_nouns <- dplyr::filter(stressshift::stress_shift_unamb, Category == "Noun")
+#puis on sélectionne seulement les colonnes word, dict et syllabe
+stress_shift_selected <- dplyr::select(stress_shift_nouns, Word, Dict, Syllable)
+#enfin, on renomme la variable Syllable en "Syllable_Noun"
+stress_shift_nouns_renamed <- dplyr::rename(stress_shift_selected, Syllable_Noun = Syllable)
+
+#On refait exactement la même chose pour les verbes
+stress_shift_verbs <- dplyr::filter(stressshift::stress_shift_unamb, Category == "Verb")
+stress_shift_v_selected <- dplyr::select(stress_shift_verbs, Word, Dict, Syllable)
+stress_shift_verbs_renamed <- dplyr::rename(stress_shift_v_selected, Syllable_Verb = Syllable)
+
+#on combine les deux tableaux
+stress_shift_wide <- dplyr::inner_join(stress_shift_nouns_renamed, stress_shift_verbs_renamed)
+```
+
+Selon la description donnée dans "HELP", inner_join permet de sortir tous les rangs dont les valeurs de x sont les mêmes que les valeurs de y. Ici donc il s'agit des valeurs de "word", "dict" et "syllabe" qui sont identique pour les noms (x) et les verbes (y). De ce fait, lorsque les noms et les verbes (pour chaque rang) ont des valeurs différentes, soit parce que le dictionnaire n'est pas le même, le nombre de syllabes, ou que les mots ne matchent pas, les valeurs ne sont pas ajoutées à ce nouveau tableau. Ceci explique donc pourquoi il y a moins de rangs dans ce nouveau tableau. Toutes les données de "noms" et de "verbes" ne matchent pas à 100%, et certaines donc ne sont pas gardées.
 
