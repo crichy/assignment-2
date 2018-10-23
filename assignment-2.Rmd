@@ -93,6 +93,7 @@ identical(stress_shift_3dict, stress_shift_3dict_using_bind_reversed)
 Je ne pense pas que l'ordre des éléments "noms" ou "verbe" importe puisque dans tous les cas les données restent les mêmes.
 
 ###### Task D
+
 ```{r}
 #on crée un subset du grand dataframe contenant seulement les noms
 stress_shift_nouns <- dplyr::filter(stressshift::stress_shift_unamb, Category == "Noun")
@@ -111,4 +112,45 @@ stress_shift_wide <- dplyr::inner_join(stress_shift_nouns_renamed, stress_shift_
 ```
 
 Selon la description donnée dans "HELP", inner_join permet de sortir tous les rangs dont les valeurs de x sont les mêmes que les valeurs de y. Ici donc il s'agit des valeurs de "word", "dict" et "syllabe" qui sont identique pour les noms (x) et les verbes (y). De ce fait, lorsque les noms et les verbes (pour chaque rang) ont des valeurs différentes, soit parce que le dictionnaire n'est pas le même, le nombre de syllabes, ou que les mots ne matchent pas, les valeurs ne sont pas ajoutées à ce nouveau tableau. Ceci explique donc pourquoi il y a moins de rangs dans ce nouveau tableau. Toutes les données de "noms" et de "verbes" ne matchent pas à 100%, et certaines donc ne sont pas gardées.
+
+###### Task E
+
+```{r}
+#on créé un histogrammme en donnant les données, l'axe x et comment sont remplies les barres
+double_bar_plot <- ggplot2::ggplot(stressshift::stress_shift_unamb,
+                                   ggplot2::aes_string(x = "Category", fill = "Syllable"))
+#on donne la forme de l'histogramme
+double_bar_plot <- double_bar_plot + ggplot2::geom_bar()
+print(double_bar_plot)
+```
+
+###### Task F
+
+```{r}
+
+for (i in nrow(stress_shift_wide$Word)) {
+  Noun_Percent_Syll <- 0
+  Verb_Percent_Syll <- 0
+  if (stress_shift_wide[[Syllable_Noun]] == "Syllable 1") {
+    Noun_Percent_Syll[i] <- + 1
+  }
+  Noun_Percent_Syll_1 <- Noun_Percent_Syll / sum(Noun_Percent_Syll)
+  
+  if (stress_shift_wide[[Syllable_Verb]] == "Syllable 1") {
+    Verb_Percent_Syll[i] <- + 1
+  }
+  Verb_Percent_Syll_1 <- Verb_Percent_Syll / sum(Verb_Percent_Syll)
+}
+
+grouped_DF <- dplyr::group_by(stress_shift_wide, Word)
+stress_shift_byword <- dplyr::summarise(grouped_DF, n(), Noun_Percent_Syll_1,
+                                                    Verb_Percent_Syll_1)
+
+```
+
+
+
+
+
+
 
