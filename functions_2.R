@@ -39,8 +39,23 @@ permutation_twogroups <- function(d, var, grouping_var, group1, group2, statisti
   return(result)
 }
 
+permutation_pvalue_right <- function(stats, obs) {
+  n_above <- sum(stats >= obs)
+  n_samples <- length(stats)
+  return((n_above + 1)/(n_samples + 1))
+}
+permutation_pvalue_left <- function(stats, obs) {
+  n_above <- sum(stats <= obs)
+  n_samples <- length(stats)
+  return((n_above + 1)/(n_samples + 1))
+}
+
+permutation_pvalue_twosided <- function(stats, obs) {
+  return(2*min(permutation_pvalue_left(stats, obs),
+               permutation_pvalue_right(stats, obs)))
+}
 
 
+#ex 3 -------------------------------------
 
-#ex 2 -------------------------------------
 
