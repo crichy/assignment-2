@@ -23,34 +23,35 @@ ptest_1 <- permutation_twogroups(iris_subset_1, "Sepal.Width", "Species", "versi
 ptest_2 <- permutation_twogroups(iris_subset_2, "Sepal.Width", "Species", "versicolor",
                                  "virginica", difference_in_means, n_samples=9999)
 set.seed(previous_seed)
-print(ptest_1)
-print(ptest_2)
+#print(ptest_1)
+#print(ptest_2)
 ```
 ```{r}
 ptest_1 <- tibble::as_tibble(ptest_1["permuted"])
+
 # création de l'histogramme partant des données ptest_1.
 ptest_hist1 <- ggplot2::ggplot(data=ptest_1, ggplot2::aes(ptest_1$permuted)) + ggplot2::geom_histogram()
+
 # on donne une échelle précise à l'histogramme.
 ptest_hist1 <- ptest_hist1 + ggplot2::xlim(-0.6,0.6)
+
 # on met la valeur observée dans l'intercept
 ptest_hist1 <- ptest_hist1 + ggplot2::geom_vline(xintercept = -0.3133333)
 print(ptest_hist1)
 
 ptest_2 <- tibble::as_tibble(ptest_2["permuted"])
+
 # création de l'histogramme partant des données ptest_1
 ptest_hist2 <- ggplot2::ggplot(data=ptest_2, ggplot2::aes(ptest_2$permuted)) + ggplot2::geom_histogram()
+
 # on donne la même échelle à cet histogramme..
 ptest_hist2 <- ptest_hist2 + ggplot2::xlim(-0.6,0.6)
+
 # on met la valeur observée dans l'intercept
 ptest_hist2 <- ptest_hist2 + ggplot2::geom_vline(xintercept = -0.2142857)
 print(ptest_hist2)
 ```
 Il y a des différences entre les deux histogrammes parce que les deux subsets ne contiennent pas le même nombre de données, et donc pas les mêmes données non plus. De ce fait, la statistique observée ne peut pas être la même non plus puisque les données comparées ne sont pas les mêmes.
-
-```{r}
-# calculer la two-sided p value
-```
-
 
 
 ##### Exercise 2
@@ -58,13 +59,14 @@ Il y a des différences entre les deux histogrammes parce que les deux subsets n
 ###### Task A
 
 ```{r}
-#création d'un subset contenant les dictionnaires "W1802", "J1917" et "C1687" grâce à l'opérateur "ou"
+# création d'un subset contenant les dictionnaires 
+# "W1802", "J1917" et "C1687" grâce à l'opérateur "ou"
 stress_shift_3dict <- dplyr::filter(stressshift::stress_shift_unamb, 
                                     Dict == "W1802" |
                                     Dict == "J1917" |  
                                     Dict == "C1687")
                                 
-#on imprime le nombre de rang de ce subset pour vérifier qu'on en a bien 451
+# on imprime le nombre de rang de ce subset pour vérifier qu'on en a bien 451
 print(nrow(stress_shift_3dict))
 ```
 
@@ -73,29 +75,34 @@ print(nrow(stress_shift_3dict))
 
 ```{r}
                                   # on commence par appeler le dataset en question
-stress_shift_3dict_using_pipe <- stressshift::stress_shift_unamb %>%
-                                  subset(Dict == "W1802" |       #puis on crée le subset
-                                    Dict == "J1917" |  
-                                    Dict == "C1687")
+stress_shift_3dict_using_pipe <- 
+    stressshift::stress_shift_unamb %>%
+                subset(Dict == "W1802" |       #puis on crée le subset
+                       Dict == "J1917" |  
+                       Dict == "C1687")
 identical(stress_shift_3dict, stress_shift_3dict_using_pipe)                                 
 ```
 
 ###### Task C
 
 ```{r}
-#création du subset qui ne prend que les noms dans la colonne "category"
+# création du subset qui ne prend que les noms dans la colonne "category"
 stress_shift_3dict_nouns <- dplyr::filter(stress_shift_3dict, Category == "Noun")
-#création du subset qui ne prend que les verbs dans la colonne "category"
+
+# création du subset qui ne prend que les verbs dans la colonne "category"
 stress_shift_3dict_verbs <- dplyr::filter(stress_shift_3dict, Category == "Verb")
-#création de la nouvelle data frame combinant les verbes et les noms
+# création de la nouvelle data frame combinant les verbes et les noms
 stress_shift_3dict_using_bind <- dplyr::bind_rows(stress_shift_3dict_nouns, stress_shift_3dict_verbs)
-#puis on inverse l'ordre
+
+# puis on inverse l'ordre
 stress_shift_3dict_using_bind_reversed <- dplyr::bind_rows(stress_shift_3dict_verbs,
                                                            stress_shift_3dict_nouns)
 print(stress_shift_3dict_using_bind_reversed)
-#on vérifie lequel de ces deux nouveaux dataframes est identique à stress_shift_3dict
+
+# on vérifie lequel de ces deux nouveaux dataframes est identique à stress_shift_3dict
 identical(stress_shift_3dict, stress_shift_3dict_using_bind)
-#on vérifie lequel de ces deux nouveaux dataframes est identique à stress_shift_3dict
+
+# on vérifie lequel de ces deux nouveaux dataframes est identique à stress_shift_3dict
 identical(stress_shift_3dict, stress_shift_3dict_using_bind_reversed)
 ```
 "Stress_shift_using_bind" est identique à "stress_shift_3dict" mais pas le dataframe reversed tout simplement parce que l'ordre de reversed ne correspond plus exactement à l'ordre donné dans "stress_shift_3dict". Dans ce dataframe, il apparait que les noms sont donnés avant les verbes.
@@ -104,19 +111,21 @@ Je ne pense pas que l'ordre des éléments "noms" ou "verbe" importe puisque dan
 ###### Task D
 
 ```{r}
-#on crée un subset du grand dataframe contenant seulement les noms
+# on crée un subset du grand dataframe contenant seulement les noms
 stress_shift_nouns <- dplyr::filter(stressshift::stress_shift_unamb, Category == "Noun")
-#puis on sélectionne seulement les colonnes word, dict et syllabe
+
+# puis on sélectionne seulement les colonnes word, dict et syllabe
 stress_shift_selected <- dplyr::select(stress_shift_nouns, Word, Dict, Syllable)
-#enfin, on renomme la variable Syllable en "Syllable_Noun"
+
+# enfin, on renomme la variable Syllable en "Syllable_Noun"
 stress_shift_nouns_renamed <- dplyr::rename(stress_shift_selected, Syllable_Noun = Syllable)
 
-#On refait exactement la même chose pour les verbes
+# On refait exactement la même chose pour les verbes
 stress_shift_verbs <- dplyr::filter(stressshift::stress_shift_unamb, Category == "Verb")
 stress_shift_v_selected <- dplyr::select(stress_shift_verbs, Word, Dict, Syllable)
 stress_shift_verbs_renamed <- dplyr::rename(stress_shift_v_selected, Syllable_Verb = Syllable)
 
-#on combine les deux tableaux
+# on combine les deux tableaux
 stress_shift_wide <- dplyr::inner_join(stress_shift_nouns_renamed, stress_shift_verbs_renamed)
 ```
 
@@ -125,10 +134,11 @@ Selon la description donnée dans "HELP", inner_join permet de sortir tous les r
 ###### Task E
 
 ```{r}
-#on créé un histogrammme en donnant les données, l'axe x et comment sont remplies les barres
+# on créé un histogrammme en donnant les données, l'axe x et comment sont remplies les barres
 double_bar_plot <- ggplot2::ggplot(stressshift::stress_shift_unamb,
                                    ggplot2::aes_string(x = "Category", fill = "Syllable"))
-#on donne la forme de l'histogramme
+
+# on donne la forme de l'histogramme
 double_bar_plot <- double_bar_plot + ggplot2::geom_bar()
 print(double_bar_plot)
 ```
@@ -136,17 +146,25 @@ print(double_bar_plot)
 ###### Task F
 
 Je n'ai jamais réussi à créer les colonnes pourcentages pour les noms et pour les verbes.
-A un certain moment, j'ai réussi à les créer seulement en faisant apparaitre "Syllabe 1"
+A un certain moment, j'ai réussi à les créer seulement en faisant apparaitre "Syllabe 1", mais jamais les valeurs en pourcentage....
 ```{r}
-  
+# je pensais créer une boucle for contenant deux conditions
+# dans chaque rang de la colonne Word,
 for (i in nrow(stress_shift_wide$Word)) {
   Noun_Percent_Syll <- 0
   Verb_Percent_Syll <- 0
-  if (stress_shift_wide[[Syllable_Noun]] == "Syllable 1") {
+  
+   # si ça correspond aussi à la colonne syllable_noun, et qu'on a un élément qui correspond
+   # exactement à "Syllable 1", alors on compte le rang + 1.
+  if (stress_shift_wide[[Syllable_Noun]] == "Syllable 1") {    
     Noun_Percent_Syll[i] <- + 1
   }
+  
+  # ensuite je voulais calculer le pourcentage en divisant le nombre de colonne compté
+  # divisé par le nombre total de colonnes Syllable_Noun
   Noun_Percent_Syll_1 <- Noun_Percent_Syll / sum(Noun_Percent_Syll)
   
+  # je pensais procéder de la même manière avec les verbes, mais ça ne marche pas
   if (stress_shift_wide[[Syllable_Verb]] == "Syllable 1") {
     Verb_Percent_Syll[i] <- + 1
   }
@@ -157,42 +175,7 @@ stress_shift_byword <- dplyr::summarise(grouped_DF)
 
 
 ```
-
-```{r}
-#autre tentative de faire cette tache
-
-Noun_Percent_Syll <- dplyr::filter(stress_shift_wide, Syllable_Noun == "Syllable 1")
-Verb_Percent_Syll <- dplyr::filter(stress_shift_wide, Syllable_Verb == "Syllable 1")
-#syll_1_df <- dplyr::inner_join(Noun_Percent_Syll, Verb_Percent_Syll)
-#stress_shift_wide_2 <- merge(stress_shift_wide, syll_1_df, all.x = TRUE)
-#print(stress_shift_wide_2)
-
-
-
-for (i in nrow(Noun_Percent_Syll)) {
-  Noun_Percent_Syll <- 0
-  Noun_Percent_Syll[i] <- as.numeric(Noun_Percent_Syll) + 1
-  Noun_Percent_Syll_1[i] <- Noun_Percent_Syll / nrow(stress_shift_wide)
-  }
-  
-  print(Noun_Percent_Syll)
-  
-  #if (stress_shift_wide$Syllable_Verb == "Syllable 1") {
-for (i in nrow(Verb_Percent_Syll)) {
-  Verb_Percent_Syll[i] <- as.numeric(Verb_Percent_Syll) + 1 
-}
-  Verb_Percent_Syll_1 <- Verb_Percent_Syll / nrow(stress_shift_wide)
-
-grouped_DF <- dplyr::group_by(stress_shift_wide, Word, Syllable_Noun, Syllable_Verb)
-stress_shift_byword <- dplyr::summarise(grouped_DF) #Noun_Percent_Syll_1,
-                                                    #Verb_Percent_Syll_1)
-
-```
-
-
-
-
-
+Comme je n'arrive pas à faire cet exercice, je n'ai pas pu faire le reste.
 
 
 #### Exercise 3
@@ -247,22 +230,29 @@ Dans ce t-test en revanche l'hypothèse nulle n'est pas falsifiée. Vu que le sa
 sample_1_a <- rnorm(5, mean = 1, sd = 2)
 sample_1_b <- rnorm(5, mean = 2, sd = 2)
 sample_1_c <- rnorm(5, mean = 2, sd = 6)
-sample_1_c <- rnorm(5, mean = 1, sd = 6)
+sample_1_d <- rnorm(5, mean = 1, sd = 6)
 sample_2_a <- rnorm(50, mean = 1, sd = 2)
 sample_2_b <- rnorm(50, mean = 2, sd = 2)
 sample_2_c <- rnorm(50, mean = 2, sd = 6)
 sample_2_d <- rnorm(50, mean = 1, sd = 6)
 
-data_set_1 <- data.frame("value" = sample_1, "group" = "1")
-data_set_2 <- data.frame("value" = sample_2, "group" = "2")
-data_set_3 <- data.frame("value" = sample_3, "group" = "3")
-data_set_4 <- data.frame("value" = sample_4, "group" = "4")
-data_set_5 <- data.frame("value" = sample_5, "group" = "5")
-data_set_6 <- data.frame("value" = sample_6, "group" = "6")
-data_set_7 <- data.frame("value" = sample_7, "group" = "7")
-data_set_8 <- data.frame("value" = sample_8, "group" = "8")
-stat_power <- rbind(data_set_1, data_set_2, data_set_3, data_set_4, data_set_5, 
-                    data_set_6, data_set_7, data_set_8)
+# puis on crée comme dans l'ex 3 deux datasets qui contiennent chacun un groupe 
+data_set_1 <- data.frame("group" = "1", 
+                         "value" = c(sample_1_a,sample_1_b, sample_1_c, sample_1_d))
+
+data_set_2 <- data.frame("group" = "2", 
+                         "value" = c(sample_2_a, sample_2_b, sample_2_c, sample_2_d))
+
+# et on combine les deux data sets en fonction de group et value
+combided_data <- rbind(data_set_1, data_set_2)
+
+# on applique la puissance statistique qui est le test de permutation
+stat_power <- permutation_twogroups(data_set_1, "group", "value",
+                          "1", "2", difference_in_means, 
+                          n_samples = 999)
+
+# mais ça ne marche pas
+
 
 ```
 

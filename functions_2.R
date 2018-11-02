@@ -1,8 +1,8 @@
 iris_subset_1 <- iris[c(89:94, 108:112),]
 iris_subset_2 <- iris[88:114,]
 
-#différence in means, on reprend la fonction différence in median 
-#mais on change la formule finale en means
+# différence in means, on reprend la fonction différence in median 
+# mais on change la formule finale en means
 difference_in_means <- function(d, var, grouping_var, group1, group2) {
   d_1 <- dplyr::filter(d, get(grouping_var) == group1)
   d_2 <- dplyr::filter(d, get(grouping_var) == group2)
@@ -43,6 +43,6 @@ permutation_twogroups <- function(d, var, grouping_var, group1, group2, statisti
 
 
 
-#ex 3 -------------------------------------
+# ex 3 -------------------------------------
 
 
