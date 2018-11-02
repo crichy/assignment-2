@@ -20,12 +20,13 @@ difference_in_means <- function(d, var, grouping_var, group1, group2) {
   return(result)
 }
 
-
+# on crée une randomisation
 randomize <- function(d, var) {
   d[[var]] <- sample(d[[var]], replace= F)
   return(d) 
 }
 
+# et enfin la permutation que l'on avait déjà utilisé dans l'assignement 1
 permutation_twogroups <- function(d, var, grouping_var, group1, group2, statistic,
                                   n_samples=9999) {
   observed_statistic <- statistic(d, var, grouping_var, group1, group2)
@@ -39,21 +40,7 @@ permutation_twogroups <- function(d, var, grouping_var, group1, group2, statisti
   return(result)
 }
 
-permutation_pvalue_right <- function(stats, obs) {
-  n_above <- sum(stats >= obs)
-  n_samples <- length(stats)
-  return((n_above + 1)/(n_samples + 1))
-}
-permutation_pvalue_left <- function(stats, obs) {
-  n_above <- sum(stats <= obs)
-  n_samples <- length(stats)
-  return((n_above + 1)/(n_samples + 1))
-}
 
-permutation_pvalue_twosided <- function(stats, obs) {
-  return(2*min(permutation_pvalue_left(stats, obs),
-               permutation_pvalue_right(stats, obs)))
-}
 
 
 #ex 3 -------------------------------------

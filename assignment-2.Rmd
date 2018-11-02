@@ -13,6 +13,7 @@ output: html_document
 
 
 ```{r, cache= T}
+# on reprend le code de l'assignement 1
 source("assignment-2.R")
 if(!exists(".Random.seed")) set.seed(NULL)
 previous_seed <- .Random.seed
@@ -27,30 +28,27 @@ print(ptest_2)
 ```
 ```{r}
 ptest_1 <- tibble::as_tibble(ptest_1["permuted"])
-# création de l'histogramme partant des données ptest_d.
+# création de l'histogramme partant des données ptest_1.
 ptest_hist1 <- ggplot2::ggplot(data=ptest_1, ggplot2::aes(ptest_1$permuted)) + ggplot2::geom_histogram()
-# ajout de la ligne à l'intercept de x. Par contre, je n'ai aucune idée de la signification de #cet intercept.
+# on donne une échelle précise à l'histogramme.
 ptest_hist1 <- ptest_hist1 + ggplot2::xlim(-0.6,0.6)
+# on met la valeur observée dans l'intercept
 ptest_hist1 <- ptest_hist1 + ggplot2::geom_vline(xintercept = -0.3133333)
 print(ptest_hist1)
 
 ptest_2 <- tibble::as_tibble(ptest_2["permuted"])
+# création de l'histogramme partant des données ptest_1
 ptest_hist2 <- ggplot2::ggplot(data=ptest_2, ggplot2::aes(ptest_2$permuted)) + ggplot2::geom_histogram()
-# ajout de la ligne à l'intercept de x. Par contre, je n'ai aucune idée de la signification de #cet intercept.
+# on donne la même échelle à cet histogramme..
 ptest_hist2 <- ptest_hist2 + ggplot2::xlim(-0.6,0.6)
+# on met la valeur observée dans l'intercept
 ptest_hist2 <- ptest_hist2 + ggplot2::geom_vline(xintercept = -0.2142857)
 print(ptest_hist2)
 ```
 Il y a des différences entre les deux histogrammes parce que les deux subsets ne contiennent pas le même nombre de données, et donc pas les mêmes données non plus. De ce fait, la statistique observée ne peut pas être la même non plus puisque les données comparées ne sont pas les mêmes.
 
 ```{r}
-p_value_right_1 <- permutation_pvalue_right(ptest_1$difference_in_means, -0.3133333)
-p_value_left_1 <- permutation_pvalue_left(ptest_1$difference_in_means, -0.3133333)
-p_value_twosided_1 <- permutation_pvalue_twosided(ptest_1$difference_in_means, -0.3133333)
-
-p_value_right_2 <- permutation_pvalue_right(ptest_2$difference_in_means, -0.2142857)
-p_value_left_2 <- permutation_pvalue_left(ptest_2$difference_in_means, -0.2142857)
-p_value_twosided_2 <- permutation_pvalue_twosided(ptest_2$difference_in_means,  -0.2142857)
+# calculer la two-sided p value
 ```
 
 
@@ -137,10 +135,9 @@ print(double_bar_plot)
 
 ###### Task F
 
+Je n'ai jamais réussi à créer les colonnes pourcentages pour les noms et pour les verbes.
+A un certain moment, j'ai réussi à les créer seulement en faisant apparaitre "Syllabe 1"
 ```{r}
-
-#Noun_Percent_Syll <- as.numeric(Noun_Percent_Syll)
-#Verb_Percent_Syll <- as.numeric(Verb_Percent_Syll)
   
 for (i in nrow(stress_shift_wide$Word)) {
   Noun_Percent_Syll <- 0
@@ -202,6 +199,8 @@ stress_shift_byword <- dplyr::summarise(grouped_DF) #Noun_Percent_Syll_1,
 
 
 ```{r}
+# on set le seed à 12
+set.seed(12)
 # on attribue une distribution normale pour les deux groupes en fonction des instructions données
 value_A <- rnorm(50, mean = 3, sd = 2)
 value_B <- rnorm(50, mean = 4, sd = 2)
@@ -217,18 +216,59 @@ data_y <- data.frame("value" = value_B, "group" = "B")
 my_data <- rbind(data_x, data_y) # de cette façon, dans la colonne group, on a le bon label
                                  # pour le bon groupe de valeurs
 
-# on set le seed à 12
-set.seed(12)
+# on set le seed à null à nouveau
 set.seed(NULL)
 ```
 ```{r}
 t.test(value_A, value_B)
 ```
+Ici, l'hypothèse nulle (qui est la même pour le second t-test dont le sample est beaucoup plus petit) dit qu'il n'y a pas de différence entre les means.
+Dans ce premier t-test, la p-value est largement inférieure à 0.05 et donc l'hypothèse nulle est falsifiée: il y a extrèmement peu de chances que le fait qu'il y ait une différence dans les moyennes soit due au hasard.
+
 ```{r}
+set.seed(12)
 value_A <- rnorm(5, mean = 3, sd = 2)
 value_B <- rnorm(5, mean = 4, sd = 2)
+set.seed(NULL)
 t.test(value_A, value_B)
 ```
+
+Dans ce t-test en revanche l'hypothèse nulle n'est pas falsifiée. Vu que le sample est extrêmement petit, on ne peut pas vraiment conclure quoi que ce soit. Ici la p-value est supérieure à 0.05 donc le résultat est largement possiblement dû au hasard. Ici c'est seulement que le sample pris a par hasard montré une différence de moyenne mais ce n'est pas significatif.
+
+```{r}
+# je ne comprends pas du tout la dernière partie de la question.
+```
+
+
+#### Exercise 4
+
+```{r}
+# on construit les huit différents samples en croisant les conditions
+sample_1_a <- rnorm(5, mean = 1, sd = 2)
+sample_1_b <- rnorm(5, mean = 2, sd = 2)
+sample_1_c <- rnorm(5, mean = 2, sd = 6)
+sample_1_c <- rnorm(5, mean = 1, sd = 6)
+sample_2_a <- rnorm(50, mean = 1, sd = 2)
+sample_2_b <- rnorm(50, mean = 2, sd = 2)
+sample_2_c <- rnorm(50, mean = 2, sd = 6)
+sample_2_d <- rnorm(50, mean = 1, sd = 6)
+
+data_set_1 <- data.frame("value" = sample_1, "group" = "1")
+data_set_2 <- data.frame("value" = sample_2, "group" = "2")
+data_set_3 <- data.frame("value" = sample_3, "group" = "3")
+data_set_4 <- data.frame("value" = sample_4, "group" = "4")
+data_set_5 <- data.frame("value" = sample_5, "group" = "5")
+data_set_6 <- data.frame("value" = sample_6, "group" = "6")
+data_set_7 <- data.frame("value" = sample_7, "group" = "7")
+data_set_8 <- data.frame("value" = sample_8, "group" = "8")
+stat_power <- rbind(data_set_1, data_set_2, data_set_3, data_set_4, data_set_5, 
+                    data_set_6, data_set_7, data_set_8)
+
+```
+
+
+
+
 
 
 
